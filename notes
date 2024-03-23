@@ -7,3 +7,57 @@ ungrouped:                      #what individually it done
       ansible_user: root        #Privilege of the app /what type of the access it has
 
 
+    loadbalancer:
+      ansible_host: 0.0.0.0
+      ansible_connection: local    #port is connect to localhost, not ssh 
+      ansible_port: 80
+      ansible_user: root   
+
+
+upstream backend {        #upstream will do divide the request load to fit in either one of them
+    server 0.0.0.0:3000;    #0.0.0.0 is the target link, means any IP address, 
+    server 0.0.0.0:3001;    #ports are the replacing the "backend"
+    server 0.0.0.0:3002;
+}
+
+server {
+    location / {
+        proxy_pass http://backend;  #will be replaced by the upstream object
+    }
+}
+
+
+
+---
+- name: Play - Install and configure Nginx as a LoadBalancer
+  hosts: loadbalancer   #what is the play act on, also defined the host loadbalancer that replace the link to localhost
+  become: yes           #increase privilege, put here so all task can have this buff of privilege
+  tasks:
+    - name: Update cache    #updateing the cache
+      apt:                  # 3 ways to download linux modules - apt (for ubuntu based, default module of codespace), yum (for debian based), apk (for alpine based)
+        update_cache: yes   #
+    - name: Install Nginx   #as the name
+      apt:            
+        name: nginx         #what image
+        state: present      #what version of image (latest here)
+    - name: Copy the Nginx config file to /etc/nginx/sites-available
+      copy:                 #copy src file to dest dir file
+        src: nginx.cfg
+        dest: /etc/nginx/sites-available/nginx.cfg
+      notify: Restart Nginx #ask the handler to do thing, can have lots of them, the moment run this line, 
+                            #handler will run once (no matter how many notify is called) after all in task in this playbook (run at the end of the playbook ) is run
+
+    - name: Create symlink of the config file at /etc/nginx/sites-enabled
+    #function here is for:
+      # create a link(pointer like) inside the /etc/nginx/sites-enabled to /etc/nginx/sites-available/nginx.cfg
+      file: # which file are you doing
+        src: /etc/nginx/sites-available/nginx.cfg
+        dest: /etc/nginx/sites-enabled/default    #need the default to ensure the link is in the default link file, not other file you specify
+        state: link #do it in a link format
+      notify: Restart Nginx
+
+    handlers:       #run only once if is called at the end of the playbook
+      - name: Restart Nginx   #name based
+        service:    #service and action to be trigger
+          name: nginx   #nginx need to do something
+          state: restarted  #what you want it to do, like here is to apply the changes you made

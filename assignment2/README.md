@@ -65,6 +65,8 @@ Then check if Nginx config file is present.
 $ ls -l /etc/nginx/sites-enabled/
 total 0
 lrwxrwxrwx 1 root root 36 Mar 12 06:45 default -> /etc/nginx/sites-available/nginx.cfg
+#this is to show the file in /etc/nginx/sites-enabled/, default is a file that points to the target we set
+#one here is correct, if did not specify default, there will be 2 here
 ```
 
 Last, check if the load balancer is working as expected. Visit http://0.0.0.0. The returned text will be from the backend services. We should see that the backend services will take turns to serve each request.
