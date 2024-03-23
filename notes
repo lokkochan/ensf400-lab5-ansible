@@ -1,0 +1,9 @@
+ungrouped:                      #what individually it done
+  hosts:
+    managedhost-app-1:
+      ansible_host: 0.0.0.0     #IP of the host
+      ansible_connection: ssh   #SSH as the connection type the host is trying to exec
+      ansible_port: 2223        #Which port the connection is exec on
+      ansible_user: root        #Privilege of the app /what type of the access it has
+
+

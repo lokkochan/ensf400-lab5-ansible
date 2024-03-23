@@ -126,7 +126,7 @@ action_warnings = False
 Use the following command to check if all hosts are added to the inventory. Note that we will include `localhost` as we take it as the Ansible Controller.
 
 ```bash
-$ export ANSIBLE_CONFIG=$(pwd)/ansible.cfg
+$ export ANSIBLE_CONFIG=$(pwd)/ansible.cfg  //everytime the key, inventory file is changed, need run this
 $ ansible all:localhost --list-hosts
   hosts (4):
     managedhost-app-1
