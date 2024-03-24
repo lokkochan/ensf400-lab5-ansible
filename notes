@@ -70,6 +70,8 @@ server {
 
 
 Command:
+PART1:
+
 ansible-playbook uninstall.yml
 sudo apt purge nginx nginx-common nginx-full
 
@@ -86,3 +88,17 @@ ansible-playbook tempPlaybook.yml
 service nginx status
 ls -l /etc/nginx/sites-enabled/
 curl http://0.0.0.0
+
+
+PART2:
+ansible-playbook uninstall.yml
+sudo apt purge nginx nginx-common nginx-full
+
+docker compose down
+docker compose up -d
+docker compose ps
+
+export ANSIBLE_CONFIG=$(pwd)/ansible.cfg 
+
+python load_inventory.py
+python run_playbook.py
