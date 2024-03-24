@@ -15,8 +15,8 @@ ungrouped:                      #what individually it done
 
 
 upstream backend {        #upstream will do divide the request load to fit in either one of them
-    server 0.0.0.0:3000;    #0.0.0.0 is the target link, means any IP address, 
-    server 0.0.0.0:3001;    #ports are the replacing the "backend"
+    server 0.0.0.0:3000;    #0.0.0.0 is the target link, means any IP address of server, 
+    server 0.0.0.0:3001;    #ports are the replacing the "backend" below
     server 0.0.0.0:3002;
 }
 
@@ -29,6 +29,11 @@ server {
 
 
 ---
+# First Play
+- name: Play - Handle Files in all hosts
+  hosts: all
+  become: yes   #increase privilege, put here so all task can have this buff of privilege
+
 - name: Play - Install and configure Nginx as a LoadBalancer
   hosts: loadbalancer   #what is the play act on, also defined the host loadbalancer that replace the link to localhost
   become: yes           #increase privilege, put here so all task can have this buff of privilege
@@ -61,3 +66,23 @@ server {
         service:    #service and action to be trigger
           name: nginx   #nginx need to do something
           state: restarted  #what you want it to do, like here is to apply the changes you made
+
+
+
+Command:
+ansible-playbook uninstall.yml
+sudo apt purge nginx nginx-common nginx-full
+
+docker compose down
+docker compose up -d
+docker compose ps
+
+export ANSIBLE_CONFIG=$(pwd)/ansible.cfg 
+ansible all:localhost --list-hosts
+ansible all:localhost -m ping
+
+ansible-playbook tempPlaybook.yml
+
+service nginx status
+ls -l /etc/nginx/sites-enabled/
+curl http://0.0.0.0
